@@ -7,24 +7,34 @@ async function extraerDatosXML(rutaArchivo) {
         const parser = new xml2js.Parser({ explicitArray: false });
         const result = await parser.parseStringPromise(xml);
 
-        // Buscamos si es Factura Electrónica o Tiquete Electrónico
-        const factura = result.FacturaElectronica || result.TiqueteElectronico || result.NotaCreditoElectronica;
+        // Hacienda usa diferentes etiquetas según el tipo de documento
+        const factura = result.FacturaElectronica || 
+                        result.TiqueteElectronico || 
+                        result.NotaCreditoElectronica;
 
-        if (!factura) return null;
+        if (!factura) {
+            return {
+                incompleta: true,
+                notas_revision: "Estructura XML de Hacienda no reconocida."
+            };
+        }
 
         return {
-            fecha: factura.FechaEmision.split('T')[0], // Formato YYYY-MM-DD
+            fecha: factura.FechaEmision.split('T')[0],
             proveedor: factura.Emisor.Nombre,
             cedula_fisica_juridica: factura.Emisor.Identificacion.Numero,
-            no_factura: factura.Clave.substring(21, 41), // Número consecutivo
-            descripcion: "Compra según XML Hacienda",
-            monto_crc: Number(factura.ResumenFactura.TotalComprobante),
+            no_factura: factura.Clave.substring(21, 41), // Consecutivo de la clave
+            descripcion: "Carga automática vía XML Hacienda",
+            monto_crc: parseFloat(factura.ResumenFactura.TotalComprobante),
             incompleta: false,
-            notas_revision: "Extraído de XML legal"
+            notas_revision: "Validado por XML legal"
         };
     } catch (error) {
-        console.error("Error leyendo XML:", error.message);
-        return null;
+        console.error("Error al leer XML:", error.message);
+        return {
+            incompleta: true,
+            notas_revision: "Error técnico al procesar el archivo XML."
+        };
     }
 }
 

@@ -2,7 +2,7 @@
   "name": "docscan-finance",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -14,10 +14,14 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.96.0",
     "@google/generative-ai": "^0.24.1",
+    "axios": "^1.16.1",
+    "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "exceljs": "^4.4.0",
     "express": "^5.2.1",
+    "nodemailer": "^8.0.7",
     "pdf-parse": "^2.4.5",
-    "pdfkit": "^0.18.0"
+    "pdfkit": "^0.18.0",
+    "xml2js": "^0.6.2"
   }
 }
